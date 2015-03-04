@@ -4,7 +4,7 @@
  * Released under the MIT license
  * www.opensource.org/licenses/MIT
  *
- * 2015-03-01
+ * 2015-03-04
  */
 
 
@@ -9625,6 +9625,8 @@ Object.assign(BlockManager.prototype, require('./function-bind'), require('./med
 
     EventBus.trigger(data ? "block:create:existing" : "block:create:new", block);
     utils.log("Block created of type " + type);
+
+    return block;
   },
 
   removeBlock: function(blockID) {
