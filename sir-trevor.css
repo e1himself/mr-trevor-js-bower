@@ -2,8 +2,7 @@
   font-size: 16px; }
 
 /* Use the following CSS code if you want to use data attributes for inserting your icons */
-[data-icon]:before,
-[data-icon-after]:after {
+[data-icon]:before, [data-icon-after]:after {
   font-family: 'ST-Icons';
   speak: none;
   /* Enable Ligatures */
@@ -61,31 +60,16 @@
   display: block;
   margin-bottom: 0.3em; }
 
-.st-text-block,
-.st-block input[type="text"],
-.st-block textarea {
+.st-text-block, .st-block input[type="text"], .st-block textarea {
   font-size: inherit;
   margin: 0;
   padding: 0.3em 0; }
 
-.st-text-block,
-.st-text-block:active,
-.st-text-block:focus,
-.st-block [contenteditable="true"],
-.st-block [contenteditable="true"]:active,
-.st-block [contenteditable="true"]:focus,
-.st-block input[type="text"],
-.st-block input[type="text"]:active,
-.st-block input[type="text"]:focus,
-.st-block textarea,
-.st-block textarea:hover,
-.st-block textarea:active {
+.st-text-block, .st-text-block:active, .st-text-block:focus, .st-block [contenteditable="true"], .st-block [contenteditable="true"]:active, .st-block [contenteditable="true"]:focus, .st-block input[type="text"], .st-block input[type="text"]:active, .st-block input[type="text"]:focus, .st-block textarea, .st-block textarea:hover, .st-block textarea:active {
   outline: none;
   border: none; }
 
-.st-block input[type="text"],
-.st-block input[type="text"]:active,
-.st-block input[type="text"]:focus {
+.st-block input[type="text"], .st-block input[type="text"]:active, .st-block input[type="text"]:focus {
   color: #42474b;
   border: 0.1em solid #d4d4d4;
   padding: .6em; }
@@ -95,8 +79,7 @@
   padding: 2em;
   color: #d70014; }
 
-.st-errors p,
-.st-errors ul {
+.st-errors p, .st-errors ul {
   margin: 0; }
 
 .st-errors ul {
@@ -120,7 +103,8 @@
 
 .st-block-controls__top:hover:before {
   color: #34E0C2;
-  background: #F3F3F3; }
+  background: #F3F3F3;
+  cursor: pointer; }
 
 .st-block-controls {
   background-color: #F3F3F3;
@@ -160,19 +144,16 @@
 .st-block__inner:hover {
   border-color: #34E0C2; }
 
-.st-block--with-errors > .st-block__inner,
-.st-block--delete-active > .st-block__inner {
+.st-block--with-errors > .st-block__inner, .st-block--delete-active > .st-block__inner {
   border-color: #d70014; }
 
-.st-block--with-plus:after,
-.st-icon--add:after {
+.st-block--with-plus:after, .st-icon--add:after {
   display: block;
   position: relative;
   z-index: 1;
   bottom: 0; }
 
-.st--block-limit-reached .st-block--with-plus:after,
-.st--block-limit-reached .st-icon--add:after {
+.st--block-limit-reached .st-block--with-plus:after, .st--block-limit-reached .st-icon--add:after {
   display: none; }
 
 .st-icon--add:after {
@@ -184,15 +165,13 @@
 
 .st-block--with-plus:after {
   background: #F3F3F3;
-  color: #34E0C2; }
+  color: #34E0C2;
+  cursor: pointer; }
 
-.with-st-controls:after,
-.with-st-controls:before {
+.with-st-controls:after, .with-st-controls:before {
   display: none; }
 
-.st-block.st-drag-over:after,
-.st-block.st-drag-over:last-child:after,
-.st-block-controls__top.st-drag-over:before {
+.st-block.st-drag-over:after, .st-block.st-drag-over:last-child:after, .st-block-controls__top.st-drag-over:before {
   font-family: inherit;
   content: "Drop block here";
   text-align: center;
@@ -201,7 +180,8 @@
   font-weight: 700;
   border: 2px dashed #d4d4d4;
   background: transparent;
-  color: #d4d4d4; }
+  color: #d4d4d4;
+  margin: 3px 0; }
 
 .st-text-block {
   min-height: 3em;
@@ -211,7 +191,7 @@
 .st-text-block--heading {
   line-height: 1.1;
   font-size: 2.2em;
-  min-height: auto;
+  min-height: 1em;
   font-weight: 700; }
 
 ul.st-text-block {
@@ -221,7 +201,7 @@ ul.st-text-block {
   padding: 1.6em 0 1em;
   border-radius: 0.2em;
   background: #F3F3F3;
-  border-top: 0.125em solid transparent; }
+  border-top: 2px solid transparent; }
 
 .st-block__dropzone .st-icon {
   font-size: 4em;
@@ -260,7 +240,8 @@ ul.st-text-block {
   z-index: 10; }
 
 .st-block__upload-container:hover .st-upload-btn {
-  background: #34E0C2; }
+  background: #34E0C2;
+  color: #fff; }
 
 .st-block__editor--with-square-media {
   padding-top: 100%;
@@ -276,10 +257,7 @@ ul.st-text-block {
   position: relative;
   width: 100%; }
 
-.st-block__editor--with-square-media video,
-.st-block__editor--with-square-media iframe,
-.st-block__editor--with-sixteen-by-nine-media video,
-.st-block__editor--with-sixteen-by-nine-media iframe {
+.st-block__editor--with-square-media video, .st-block__editor--with-square-media iframe, .st-block__editor--with-sixteen-by-nine-media video, .st-block__editor--with-sixteen-by-nine-media iframe {
   height: 100%;
   width: 100%;
   left: 0;
@@ -328,7 +306,7 @@ ul.st-text-block {
   color: #d70014; }
 
 .st-block-positioner {
-  border: 0.125em solid #34E0C2;
+  border: 2px solid #34E0C2;
   position: absolute;
   z-index: 2;
   left: -5.5em;
@@ -353,7 +331,7 @@ ul.st-text-block {
   right: -0.3em;
   bottom: 0.6em;
   z-index: 1;
-  border: 0.125em solid #34E0C2;
+  border: 2px solid #34E0C2;
   background: #fff;
   -webkit-transform: rotate(45deg);
   -moz-transform: rotate(45deg);
@@ -361,24 +339,18 @@ ul.st-text-block {
   -o-transform: rotate(45deg);
   transform: rotate(45deg); }
 
-.st-block-positioner__title {
-  color: #34E0C2;
-  font-size: 0.7em;
-  font-style: italic;
-  font-weight: normal;
-  margin: 0;
-  border-bottom: 1px solid #34E0C2;
-  padding: 0.5em;
-  text-align: center; }
-
 .st-block-positioner__inner {
   background: #fff;
   position: relative;
   z-index: 2;
   padding: 0.3em 0.5em; }
 
-.st-block__ui,
-.st-block__ui-delete-controls {
+.st-block--with-errors > .st-block__inner > .st-block__ui .st-block-positioner, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-positioner {
+  border-color: #d70014; }
+  .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-positioner:after, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-positioner:after {
+    border-color: #d70014; }
+
+.st-block__ui, .st-block__ui-delete-controls {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -390,8 +362,7 @@ ul.st-text-block {
   left: 0;
   opacity: 0; }
 
-.st-block__inner:hover > .st-block__ui,
-.st-block__inner:hover > .st-block__control-ui {
+.st-block__inner:hover > .st-block__ui, .st-block__inner:hover > .st-block__control-ui {
   opacity: 1; }
 
 .st-block-ui-btn, .st-block-control-ui-btn {
@@ -409,10 +380,12 @@ ul.st-text-block {
   border-bottom: 0;
   margin-bottom: 0;
   cursor: pointer; }
+  .st-block-ui-btn:hover, .st-block-control-ui-btn:hover, .st-block-ui-btn.active, .active.st-block-control-ui-btn {
+    color: #fff;
+    background: #34E0C2; }
 
 .st-block-control-ui-btn {
   width: 2em;
-  height: 1.75em;
   font-size: 1.5em;
   line-height: 1.25em;
   height: 1.25em;
@@ -420,19 +393,16 @@ ul.st-text-block {
   border-left: 0;
   border-bottom: 0; }
 
-.st-block--with-errors > .st-block__inner > .st-block__ui .st-block-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-control-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-control-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn {
+.st-block--with-errors > .st-block__inner > .st-block__ui .st-block-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-control-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__control-ui .st-block-control-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-control-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__control-ui .st-block-control-ui-btn {
   color: #d70014;
   border-color: #d70014; }
-  .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-control-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-control-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn:hover {
+  .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-control-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__ui .st-block-ui-btn.active, .st-block--with-errors > .st-block__inner > .st-block__ui .active.st-block-control-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn.active, .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls .active.st-block-control-ui-btn, .st-block--with-errors > .st-block__inner > .st-block__control-ui .st-block-control-ui-btn:hover, .st-block--with-errors > .st-block__inner > .st-block__control-ui .st-block-control-ui-btn.active, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-control-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui .st-block-ui-btn.active, .st-block--delete-active > .st-block__inner > .st-block__ui .active.st-block-control-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-control-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .st-block-ui-btn.active, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls .active.st-block-control-ui-btn, .st-block--delete-active > .st-block__inner > .st-block__control-ui .st-block-control-ui-btn:hover, .st-block--delete-active > .st-block__inner > .st-block__control-ui .st-block-control-ui-btn.active {
+    color: #fff;
     background-color: #d70014; }
+
 .st-block--with-errors > .st-block__inner > .st-block__ui-delete-controls, .st-block--delete-active > .st-block__inner > .st-block__ui-delete-controls {
   opacity: 1;
   z-index: 2; }
-
-.st-block-ui-btn:hover, .st-block-control-ui-btn:hover,
-.st-block-control-ui-btn:hover {
-  color: #fff;
-  background: #34E0C2; }
 
 .st-block__delete-label {
   display: block;
@@ -486,8 +456,7 @@ ul.st-text-block {
 .st-format-btn:last-child {
   border-right: none; }
 
-.st-format-btn:hover,
-.st-format-btn--is-active {
+.st-format-btn:hover, .st-format-btn--is-active {
   color: #34E0C2; }
 
 .st-format-btn--Italic {

@@ -1,10 +1,10 @@
 /*!
- * Sir Trevor JS v0.5.0-beta1
+ * Sir Trevor JS v0.5.0-beta3
  *
  * Released under the MIT license
  * www.opensource.org/licenses/MIT
  *
- * 2015-03-04
+ * 2015-03-13
  */
 
 
@@ -9036,7 +9036,7 @@ module.exports = function () {
             var anchorNode = selection.getContaining(function (node) {
                     return node.nodeName === this.nodeName;
                 }.bind(this));
-            var initialLink = anchorNode ? anchorNode.href : 'http://';
+            var initialLink = anchorNode ? anchorNode.href : '';
             var link = window.prompt('Enter a link.', initialLink);
             if (anchorNode) {
                 range.selectNode(anchorNode);
@@ -9045,8 +9045,9 @@ module.exports = function () {
             }
             if (link) {
                 var urlProtocolRegExp = /^https?\:\/\//;
-                if (!urlProtocolRegExp.test(link)) {
-                    if (!/^mailto\:/.test(link) && /@/.test(link)) {
+                var mailtoProtocolRegExp = /^mailto\:/;
+                if (!urlProtocolRegExp.test(link) && !mailtoProtocolRegExp.test(link)) {
+                    if (/@/.test(link)) {
                         var shouldPrefixEmail = window.confirm('The URL you entered appears to be an email address. ' + 'Do you want to add the required \u201cmailto:\u201d prefix?');
                         if (shouldPrefixEmail) {
                             link = 'mailto:' + link;
@@ -9634,15 +9635,17 @@ Object.assign(BlockManager.prototype, require('./function-bind'), require('./med
     type = utils.classify(block.type);
 
     // assume there can be nested blocks. if none - it's ok.
-    var nested_blocks = block.$el.find('.st-block');
-    if (nested_blocks.length > 0) {
-      var list = nested_blocks.map(function() {
-        return { depth: $(this).parents().length, id: this.getAttribute('id') };
-      }).get();
-      list.sort(function(a, b) { return a.depth - b.depth; });
-      // remove nested blocks in a proper order (deepest first)
-      for (var i=0; i<list.length; i++) {
-        this.removeBlock(list[i].id);
+    if (!_.isUndefined(block.$el)) {
+      var nested_blocks = block.$el.find('.st-block');
+      if (nested_blocks.length > 0) {
+        var list = nested_blocks.map(function() {
+          return { depth: $(this).parents().length, id: this.getAttribute('id') };
+        }).get();
+        list.sort(function(a, b) { return a.depth - b.depth; });
+        // remove nested blocks in a proper order (deepest first)
+        for (var i=0; i<list.length; i++) {
+          this.removeBlock(list[i].id);
+        }
       }
     }
 
@@ -10147,7 +10150,6 @@ var scribePluginLinkPromptCommand = require('scribe-plugin-link-prompt-command')
 
 var config = require('./config');
 var utils = require('./utils');
-var stToMarkdown = require('./to-markdown');
 var BlockMixins = require('./block_mixins');
 
 var SimpleBlock = require('./simple-block');
@@ -10239,13 +10241,23 @@ Object.assign(Block.prototype, SimpleBlock.fn, require('./block-validations'), {
 
     this.$editor = this.$inner.children().first();
 
-    if(this.droppable || this.pastable || this.uploadable) {
+    this.mixinsRequireInputs = false;
+    this.availableMixins.forEach(function(mixin) {
+      if (this[mixin]) {
+        var blockMixin = BlockMixins[utils.classify(mixin)];
+        if (!_.isUndefined(blockMixin.requireInputs) && blockMixin.requireInputs) {
+          this.mixinsRequireInputs = true;
+        }
+      }
+    }, this);
+
+    if(this.mixinsRequireInputs) {
       var input_html = $("<div>", { 'class': 'st-block__inputs' });
       this.$inner.append(input_html);
       this.$inputs = input_html;
     }
 
-    if (this.hasTextBlock) { this._initTextBlocks(); }
+    if (this.hasTextBlock()) { this._initTextBlocks(); }
 
     this.availableMixins.forEach(function(mixin) {
       if (this[mixin]) {
@@ -10297,9 +10309,7 @@ Object.assign(Block.prototype, SimpleBlock.fn, require('./block-validations'), {
     /* Simple to start. Add conditions later */
     if (this.hasTextBlock()) {
       data.text = this.getTextBlockHTML();
-      if (data.text.length > 0 && this.options.convertToMarkdown) {
-        data.text = stToMarkdown(data.text, this.type);
-      }
+      data.isHtml = true;
     }
 
     // Add any inputs to the data attr
@@ -10381,7 +10391,7 @@ Object.assign(Block.prototype, SimpleBlock.fn, require('./block-validations'), {
   beforeLoadingData: function() {
     this.loading();
 
-    if(this.droppable || this.uploadable || this.pastable) {
+    if(this.mixinsRequireInputs) {
       this.$editor.show();
       this.$inputs.hide();
     }
@@ -10438,6 +10448,7 @@ Object.assign(Block.prototype, SimpleBlock.fn, require('./block-validations'), {
   },
 
   _initFormatting: function() {
+
     // Enable formatting keyboard input
     var block = this;
 
@@ -10479,14 +10490,19 @@ Object.assign(Block.prototype, SimpleBlock.fn, require('./block-validations'), {
 
     var textBlock = this.getTextBlock().get(0);
     if (!_.isUndefined(textBlock) && _.isUndefined(this._scribe)) {
-      this._scribe = new Scribe(textBlock, {
-        debug: config.scribeDebug,
-      });
+
+      var scribeConfig = {debug: config.scribeDebug};
+      if (_.isObject(this.scribeOptions)) {
+        scribeConfig = Object.assign(scribeConfig, this.scribeOptions);
+      }
+
+      this._scribe = new Scribe(textBlock, scribeConfig);
+
       this._scribe.use(scribePluginFormatterPlainTextConvertNewLinesToHTML());
       this._scribe.use(scribePluginLinkPromptCommand());
 
-      if (_.isFunction(this.options.configureScribe)) {
-        this.options.configureScribe.call(this, this._scribe);
+      if (_.isFunction(this.configureScribe)) {
+        this.configureScribe.call(this, this._scribe);
       }
     }
   },
@@ -10539,7 +10555,7 @@ Block.extend = require('./helpers/extend'); // Allow our Block to be extended.
 module.exports = Block;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./block-deletion":140,"./block-positioner":142,"./block-reorder":143,"./block-validations":145,"./block_mixins":151,"./config":162,"./event-bus":165,"./helpers/extend":175,"./lodash":178,"./simple-block":181,"./to-markdown":183,"./utils":184,"scribe-editor":132,"scribe-plugin-formatter-plain-text-convert-new-lines-to-html":135,"scribe-plugin-link-prompt-command":136,"spin.js":137}],147:[function(require,module,exports){
+},{"./block-deletion":140,"./block-positioner":142,"./block-reorder":143,"./block-validations":145,"./block_mixins":151,"./config":162,"./event-bus":165,"./helpers/extend":175,"./lodash":178,"./simple-block":181,"./utils":184,"scribe-editor":132,"scribe-plugin-formatter-plain-text-convert-new-lines-to-html":135,"scribe-plugin-link-prompt-command":136,"spin.js":137}],147:[function(require,module,exports){
 "use strict";
 
 var utils = require('../utils');
@@ -10637,6 +10653,7 @@ module.exports = {
 
   mixinName: "Droppable",
   valid_drop_file_types: ['File', 'Files', 'text/plain', 'text/uri-list'],
+  requireInputs: true,
 
   initializeDroppable: function() {
     utils.log("Adding droppable to block " + this.blockID);
@@ -10747,6 +10764,7 @@ var utils = require('../utils');
 module.exports = {
 
   mixinName: "Pastable",
+  requireInputs: true,
 
   initializePastable: function() {
     utils.log("Adding pastable to block " + this.blockID);
@@ -10778,6 +10796,7 @@ module.exports = {
   mixinName: "Uploadable",
 
   uploadsCount: 0,
+  requireInputs: true,
 
   initializeUploadable: function() {
     utils.log("Adding uploadable to block " + this.blockID);
@@ -10811,10 +10830,16 @@ module.exports = Block.extend({
 
   editorHTML: '<div class="st-required st-text-block st-text-block--heading" contenteditable="true"></div>',
 
+  scribeOptions: { allowBlockElements: false },
+
   icon_name: 'heading',
 
   loadData: function(data){
-    this.getTextBlock().html(stToHTML(data.text, this.type));
+    if (this.options.convertFromMarkdown && !data.isHtml) {
+      this.setTextBlockHTML(stToHTML(data.text, this.type));
+    } else {
+      this.setTextBlockHTML(data.text);
+    }
   }
 });
 
@@ -10911,7 +10936,11 @@ module.exports = Block.extend({
   },
 
   loadData: function(data){
-    this.setTextBlockHTML("<ul>" + stToHTML(data.text, this.type) + "</ul>");
+    if (this.options.convertFromMarkdown && !data.isHtml) {
+      this.setTextBlockHTML("<ul>" + stToHTML(data.text, this.type) + "</ul>");
+    } else {
+      this.setTextBlockHTML(data.text);
+    }
   },
 
   onBlockRender: function() {
@@ -10924,12 +10953,6 @@ module.exports = Block.extend({
     if (this.$('ul').length === 0) {
       document.execCommand("insertUnorderedList", false, false);
     }
-  },
-
-  toMarkdown: function(markdown) {
-    return markdown.replace(/<\/li>/mg,"\n")
-                   .replace(/<\/?[^>]+(>|$)/g, "")
-                   .replace(/^(.+)$/mg," - $1");
   },
 
   toHTML: function(html) {
@@ -10983,14 +11006,14 @@ module.exports = Block.extend({
   },
 
   loadData: function(data){
-    this.getTextBlock().html(stToHTML(data.text, this.type));
+    if (this.options.convertFromMarkdown && !data.isHtml) {
+      this.setTextBlockHTML(stToHTML(data.text, this.type));
+    } else {
+      this.setTextBlockHTML(data.text);
+    }
+
     this.$('.js-cite-input').val(data.cite);
-  },
-
-  toMarkdown: function(markdown) {
-    return markdown.replace(/^(.+)$/mg,"> $1");
   }
-
 });
 
 },{"../block":146,"../lodash":178,"../to-html":182}],159:[function(require,module,exports){
@@ -11014,7 +11037,11 @@ module.exports = Block.extend({
   icon_name: 'text',
 
   loadData: function(data){
-    this.getTextBlock().html(stToHTML(data.text, this.type));
+    if (this.options.convertFromMarkdown && !data.isHtml) {
+      this.setTextBlockHTML(stToHTML(data.text, this.type));
+    } else {
+      this.setTextBlockHTML(data.text);
+    }
   },
 });
 
@@ -11146,7 +11173,7 @@ module.exports = Block.extend({
       html: "<iframe src=\"<%= protocol %>//player.vimeo.com/video/<%= remote_id %>?title=0&byline=0\" width=\"580\" height=\"320\" frameborder=\"0\"></iframe>"
     },
     youtube: {
-      regex: /(?:http[s]?:\/\/)?(?:www.)?(?:(?:youtube.com\/watch\?(?:.*)(?:v=))|(?:youtu.be\/))([^&].+)/,
+      regex: /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/,
       html: "<iframe src=\"<%= protocol %>//www.youtube.com/embed/<%= remote_id %>\" width=\"580\" height=\"320\" frameborder=\"0\" allowfullscreen></iframe>"
     }
   },
@@ -11271,8 +11298,8 @@ module.exports = {
     uploadUrl: '/attachments',
     baseImageUrl: '/sir-trevor-uploads/',
     errorsContainer: undefined,
-    convertToMarkdown: false,
     convertFromMarkdown: true,
+    formatBarContainer: document.body,
     formatBar: {
       commands: [
         {
@@ -11343,10 +11370,11 @@ Object.assign(Editor.prototype, require('./function-bind'), require('./events'),
 
   bound: ['onFormSubmit', 'hideAllTheThings', 'changeBlockPosition',
     'removeBlockDragOver', 'renderBlock', 'resetBlockControls',
-    'blockLimitReached'], 
+    'blockLimitReached'],
 
   events: {
     'block:reorder:dragend': 'removeBlockDragOver',
+    'block:reorder:dropped': 'removeBlockDragOver',
     'block:content:dropped': 'removeBlockDragOver'
   },
 
@@ -11401,7 +11429,7 @@ Object.assign(Editor.prototype, require('./function-bind'), require('./events'),
     this._setEvents();
 
     this.$wrapper.prepend(this.fl_block_controls.render().$el);
-    $(document.body).append(this.formatBar.render().$el);
+    $(this.options.formatBarContainer).append(this.formatBar.render().$el);
     this.$outer.append(this.block_controls.render().$el);
 
     $(window).bind('click', this.hideAllTheThings);
@@ -11433,8 +11461,8 @@ Object.assign(Editor.prototype, require('./function-bind'), require('./events'),
     this.block_controls.destroy();
 
     // Destroy all blocks
-    this.blocks.forEach(function(block) {
-      this.mediator.trigger('block:remove', this.block.blockID);
+    this.block_manager.blocks.forEach(function(block) {
+      this.mediator.trigger('block:remove', block.blockID);
     }, this);
 
     // Stop listening to events
@@ -11484,13 +11512,8 @@ Object.assign(Editor.prototype, require('./function-bind'), require('./events'),
   renderBlock: function(block, render_at) {
     this._renderInPosition(block.render().$el, render_at);
     this.hideAllTheThings();
-    this.scrollTo(block.$el);
 
     block.trigger("onRender");
-  },
-
-  scrollTo: function(element) {
-    $('html, body').animate({ scrollTop: element.position().top }, 300, "linear");
   },
 
   removeBlockDragOver: function() {
@@ -11508,7 +11531,6 @@ Object.assign(Editor.prototype, require('./function-bind'), require('./events'),
     if($blockBy && $blockBy.attr('id') !== $block.attr('id')) {
       this.hideAllTheThings();
       $block["insert" + where]($blockBy);
-      this.scrollTo($block);
     }
   },
 
@@ -11852,12 +11874,12 @@ var EventBus = require('../event-bus');
 
 var Submittable = function($form) {
   this.$form = $form;
-  this.intialize();
+  this.initialize();
 };
 
 Object.assign(Submittable.prototype, {
 
-  intialize: function(){
+  initialize: function(){
     this.submitBtn = this.$form.find("input[type='submit']");
 
     var btnTitles = [];
@@ -12156,14 +12178,17 @@ Object.assign(FormatBar.prototype, require('./function-bind'), require('./mediat
   remove: function(){ this.$el.remove(); },
 
   renderBySelection: function() {
-
     var selection = window.getSelection(),
-    range = selection.getRangeAt(0),
-    boundary = range.getBoundingClientRect(),
-    coords = {};
+        range = selection.getRangeAt(0),
+        boundary = range.getBoundingClientRect(),
+        coords = {},
+        scrollTop = this.el.parentNode.scrollTop,
+        // in case the format bar is inside a scrollable container
+        leftOffset = this.el.parentNode.offsetLeft,
+        topOffset = this.el.parentNode.offsetTop;
 
-    coords.top = boundary.top + 20 + window.pageYOffset - this.$el.height() + 'px';
-    coords.left = ((boundary.left + boundary.right) / 2) - (this.$el.width() / 2) + 'px';
+    coords.top = boundary.top + 20 + scrollTop - this.$el.height() - topOffset + 'px';
+    coords.left = ((boundary.left + boundary.right) / 2) - (this.$el.width() / 2) - leftOffset + 'px';
 
     this.highlightSelectedButtons();
     this.show();
