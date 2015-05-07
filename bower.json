@@ -1,6 +1,6 @@
 {
   "name": "mr-trevor-js",
-  "version": "0.5.2-beta3",
+  "version": "0.6",
   "ignore": [
     "**/.*",
     "node_modules",
